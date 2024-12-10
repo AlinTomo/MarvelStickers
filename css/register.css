@@ -1,0 +1,67 @@
+.img-fluid, .card-body {
+    height: 100%;
+}
+
+.row>*{
+    padding-left: initial;
+    padding-right: initial;
+}
+
+.margin-left{
+    margin-left: 55vw;
+}
+
+.card-body{
+    padding-inline: 5%;
+}
+
+@media (min-width: 1600px) {
+    .margin-left{
+        margin-left: 55vw; /* Esempio di stile per schermi xxl */
+        padding-right: 3.5%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .margin-left{
+        margin-left: 54vw; /* Esempio di stile per schermi xl */
+        padding-right: 3%;
+    }
+    
+}
+
+@media(max-width: 1199.98px) {
+    .margin-left{
+        margin-left: 35vw;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .margin-left{
+        margin-left: 32vw;
+    }
+}
+
+/*per il layout telefono faccio scomparire l'immagine*/
+@media(max-width: 576px){
+    .hide-on-sm{
+        display: none !important;
+    }
+
+    .margin-left{
+        width: 30vw;
+        margin-left: 67vw;
+    }
+
+    .card-body{
+        padding-inline: 5%;
+    }
+}
+
+@media (max-width: 376px) {
+    .margin-left{
+        width: 37vw;
+        margin-left: 59vw;
+    }
+}
+

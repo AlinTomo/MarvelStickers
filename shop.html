@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <title>Shop</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="globals.js"></script> 
+    <script src="nav.js"></script> 
+    <div class="container">
+        <h1 id="title" class="text-center mt-3"> Welcome to the shop!</h1>
+        <div id="shopContainer"  class="row mt-4">
+            <div class="col-md-4 col-sm-4">
+                <div id="carousel1" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- vuoto apposto perchè la card è generata da una funzione-->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <h4 id="dailyOffer" class="text-center mt-3">daily offer</h4>
+            </div>
+            <div class="col-md-4 col-sm-4"> 
+                <div id="carousel2" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- vuoto apposto perchè la card è generata da una funzione-->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel2" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel2" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <h4 id="packets" class="text-center mt-3">packets</h4>
+            </div>
+            <div class="col-md-4 col-sm-4">
+                <div id="carousel3" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- vuoto apposto perchè la card è generata da una funzione-->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel3" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel3" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <h4 id="credits" class="text-center mt-3">credits </h4>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    validateLog();
+    document.getElementsByClassName('nav-link')[2].classList.add('active');
+    localStorage.setItem("Pag",4);
+    
+    /*per caricare lo shop e il carrello li carico in sequenza stabilendo un ordine per evitare errori di caricamento
+    e conflitti tra le varie richieste del server */
+    generateDiscount()  
+        .then(() => generateCredits())
+        .then(() => generateAlbums())
+        .then(() => showCart())
+        .catch(error => {
+            console.error("Error in fetching data:", error);
+    });
+
+    loadLang();
+
+    function generateDiscount(){//genera nello shop le offerte giornaliere
+        flag = false;
+        return fetch("http://localhost:3000/discount?api_key="+api_key)
+            .then(response => {
+                if(response.status === 200){
+                    flag = true;
+                }
+                return response.json();
+            })
+            .then(response => {
+                if(flag){
+                    carousel = document.getElementsByClassName('carousel-inner')[0];
+                    //console.log(response);
+                    for(i = 0; i < response.length; i++){
+                        node = createCard();
+                        node.classList.remove('d-none');
+                        if(i != 0)
+                            node.classList.remove('active');
+                        //console.log(response[i]);
+                        node.getElementsByClassName('card')[0].id = response[i]._id;
+                        if(response[i].price != undefined){ // se ha il prezzo allora sono i crediti altrimenti è l'album
+                            node.getElementsByClassName('card-title')[0].textContent = response[i].credits + " credits";
+                            node.getElementsByClassName('btn-danger')[0].textContent = "Buy for " + response[i].price + "$";
+                        }
+                        else{
+                            node.getElementsByClassName('card-title')[0].textContent = response[i].cards + " cards";
+                            node.getElementsByClassName('btn-danger')[0].textContent = "Buy for " + response[i].credits + " credits";
+                        }
+                        node.getElementsByClassName('card-img-top')[0].src = response[i].src;
+                        node.getElementsByClassName('btn-danger')[0].href = "buy.html?id=" + response[i].id;
+                        carousel.appendChild(node);
+                    }
+                } else {
+                    console.log("Error fetching discount data");
+                }
+            })
+            .catch(error => {
+                console.error("Error in generateDiscount:", error);
+            });
+    }
+    
+    function generateCredits(){//genera le offerte dei crediti nello shop
+        flag = false; 
+        return fetch("http://localhost:3000/shop?api_key="+api_key)
+            .then(response => {
+                if(response.status === 200){
+                    flag = true;
+                }
+                return response.json();
+            })
+            .then(response => {
+                response.sort((a, b) => a.credits - b.credits);
+                if(flag){
+                    const carousel = document.getElementsByClassName('carousel-inner')[2];
+                    //console.log(response);
+                    for( i = 0; i < response.length; i++){
+                        node = createCard();
+                        node.classList.remove('d-none');
+                        if(i !== 0)
+                            node.classList.remove('active');
+                        node.getElementsByClassName('card')[0].id = response[i]._id;
+                        node.getElementsByClassName('card-img-top')[0].src = response[i].src;
+                        node.getElementsByClassName('card-title')[0].textContent = response[i].credits + " credits";
+                        node.getElementsByClassName('btn-danger')[0].textContent = "Buy for " + response[i].price + "$";
+                        carousel.appendChild(node);
+                    }
+                } else {
+                    console.log("Error fetching shop data");
+                }
+            })
+            .catch(error => {
+                console.error("Error in generateCredits:", error);
+            });
+    }
+
+    function generateAlbums(){//genera le offerte dei pacchetti di figurine
+        flag = false;
+        return fetch("http://localhost:3000/albums?api_key="+api_key)
+            .then(response => {
+                if(response.status === 200){
+                    flag = true;
+                }
+                return response.json();
+            })
+            .then(response => {
+                response.sort((a, b) => a.cards - b.cards);
+                if(flag){
+                    const carousel = document.getElementsByClassName('carousel-inner')[1];
+                    //console.log(response);
+                    for(i = 0; i < response.length; i++){
+                        node = createCard();
+                        node.classList.remove('d-none');
+                        if(i !== 0)
+                            node.classList.remove('active');
+                        node.getElementsByClassName('card')[0].id = response[i]._id;
+                        node.getElementsByClassName('card-img-top')[0].src = response[i].src;
+                        node.getElementsByClassName('card-title')[0].textContent = response[i].cards + " cards";
+                        node.getElementsByClassName('btn-danger')[0].textContent = "Buy for " + response[i].credits + " credits";
+                        carousel.appendChild(node);
+                    }
+                } else {
+                    console.log("Error fetching albums data");
+                }
+            })
+            .catch(error => {
+                console.error("Error in generateAlbums:", error);
+            });
+    }
+
+    function updateModalFooter(){ //aggiorna i prezzi i crediti ecc del carrello
+        buy = collectData();
+        buy.then((response) => {
+            // console.log(response);
+            let totalPrice = document.getElementById("totalPrice").textContent;
+            let totalCredits = document.getElementById("totalCredits").textContent;
+            let totalCards = document.getElementById("totalCards").textContent;
+            let buy = document.getElementById("buy").textContent;
+            localStorage.setItem("totalPrice",response.price);
+            localStorage.setItem("totalCredits",response.cartCredits);
+            localStorage.setItem("totalCards",response.packets.length);
+            document.getElementById("totalPrice").textContent = lastSpaceReplace(totalPrice,String(response.price)) + "$";
+            document.getElementById("totalCredits").textContent = lastSpaceReplace(totalCredits,String(response.cartCredits));
+            document.getElementById("totalCards").textContent = lastSpaceReplace(totalCards,String(response.packets.length));
+        });
+    }
+
+    function showCart(){ //mostra tutti gli elementi che sono nel carrello
+        let lengthCart = 0;
+        cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");   
+        clone = document.getElementById("clone");
+        parent = clone.parentNode;
+        while (clone.nextSibling) {
+            parent.removeChild(clone.nextSibling);
+        }   
+        // console.log(cartItems);
+        for(i = 0; i < cartItems.length; i++){
+            oneToCart(cartItems[i].response,cartItems[i].quantity);
+            lengthCart += cartItems[i].quantity;
+        }
+        document.getElementById("cartLenght").textContent = lengthCart;
+        updateModalFooter();
+    }
+
+    async function addToCart(info){// aggiunge gli elementi in un oggetto carrello situato nel local storage
+        let cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        included = false;
+        for(i = 0; i < cartItems.length && included == false; i++){
+            // console.log(cartItems[i]);
+            if(cartItems[i].response._id.includes(info.id)){
+                //console.log("incluso");
+                cartItems[i].quantity++;
+                // console.log(cartItems[i]);
+                included = true;
+                localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                break;
+            }
+        }
+        if(!included){
+            // console.log("non incluso");
+            // console.log(cartItems);
+            await fetch("http://localhost:3000/shop/"+info.id+"?api_key="+api_key)
+                .then(response => {
+                    return response.json();
+                })
+                .then(response => {
+                    cartItems.push({response, quantity: 1});
+                    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                })
+                .catch(error => {
+                    console.error("Error in addToCart:", error);
+                });
+        }
+        showCart(); 
+    }
+
+    function oneToCart(data,quantity){ //si occupa di costruire la card per il singolo elemento presentenel carrello
+        // console.log(data)
+        // console.log("unit",unit);
+        // console.log("subtotal",subtotal);
+        cart = document.getElementById("inner-cart");
+        clone = document.getElementById("clone");
+        temp = clone.cloneNode(true);
+        temp.classList.remove("d-none");
+        temp.id = "cart" + data._id;        
+        temp.getElementsByClassName("card-img-top")[0].src = data.src;
+        temp.getElementsByTagName("input")[0].value = quantity;
+        if(data.price != undefined){
+            temp.getElementsByClassName("card-title")[0].textContent = data.credits + " credits";
+            temp.getElementsByClassName("unit")[0].textContent = data.price + "$";
+            subtotal = data.price * quantity;
+            subtotal = Math.round(subtotal * 100) / 100
+            temp.getElementsByClassName("subtotal")[0].textContent = subtotal + "$";
+        }
+        else{
+            temp.getElementsByClassName("card-title")[0].textContent = data.cards + " cards";
+            temp.getElementsByClassName("unit")[0].textContent = data.credits + " credits";
+            subtotal = data.credits * quantity;
+            temp.getElementsByClassName("subtotal")[0].textContent = subtotal + " credits";
+        }
+        if(!data.discount)
+            temp.getElementsByClassName("discount")[0].textContent = "no";
+        else
+            temp.getElementsByClassName("discount")[0].textContent = "yes";
+        cart.appendChild(temp);
+        loadLang();
+    }
+
+    function inc(button,card){ //aggiunge un oggetto in più dello stesso tipo al carrello
+        cartItems = JSON.parse(localStorage.getItem("cartItems"));
+        // console.log(cartItems);
+        // console.log(card.id);
+        if(button.value < 10){
+            for(i = 0; i < cartItems.length; i++){
+                if(card.id.includes(cartItems[i].response._id)){
+                    // console.log("incluso");
+                    cartItems[i].quantity++;
+                    button.value++;
+                    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                    updateModalFooter();
+                    break;
+                }
+            }
+        }
+        showCart();
+    }
+
+    function dec(button,card){ //toglie un oggetto dello stesso tipo al carrello e in caso lo elemina
+        cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        if(button.value > 1){
+            for(i = 0; i < cartItems.length; i++){
+                if(card.id.includes(cartItems[i].response._id)){
+                    // console.log("incluso");
+                    cartItems[i].quantity--;
+                    button.value--;
+                    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                    updateModalFooter();
+                    break;
+                }
+            }
+        }
+            else{
+                remove(card,card.id);
+            }
+        showCart();
+    }
+
+    function remove(card,id){//rimuove un oggetto definitivamente dal carrello
+        let cartLenght = 0;
+        cartItems = JSON.parse(localStorage.getItem("cartItems"))
+        console.log("cartItems",cartItems);
+        for (let i = 0; i < cartItems.length; i++) {
+            // console.log(cartItems[i]);
+            if(card.id.includes(cartItems[i].response._id)){
+                cartItems.splice(i, 1);
+                break;
+            }
+        }
+        for(let i = 0; i < cartItems.length; i++){
+            cartLenght += cartItems[i].quantity;
+        }
+        document.getElementById("cartLenght").textContent = cartLenght;
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        document.getElementById('inner-cart').removeChild(card);
+
+        updateModalFooter();
+    }
+
+</script>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <title>Hero</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+    <script src="nav.js"></script>
+    <div class="container">
+        <div id="cardCopy" class="card mt-4 mb-4">
+            <div class="row g-0">
+                <div class="col-lg-4 col-md-5 col-sm-6">
+                    <img class="img-fluid rounded-start" id="img" src=""  alt="...">
+                </div>
+                <div class="col-lg-8 col-md-7 col-sm-6">
+                    <div class="card-body">
+                        <h1 id="title" class="card-title">Card title</h1>
+                        <p id="overwiew" class="card-text mt-2 overwiew">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="comics" class="row my-3">
+            <h3 id="titleComics" class="text-center">Comics</h3>
+            <div id="comicsCopy" class="comics col-xl-2 col-lg-3 col-md-3 col-sm-4 my-2">
+                <div class="card h-100 d-flex flex-column d-none">
+                    <img src="" class="card-img-top img-fluid" alt="Image">
+                    <div class="card-body flex-grow-1 d-flex flex-column">
+                        <h5 class="card-title text-center">Title</h5> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="series" class="row my-3">
+            <h3 id="titleSeries"  class="text-center">Series</h3>
+            <div id="seriesCopy" class="comics col-xl-2 col-lg-3 col-md-3 col-sm-4 my-2">
+                <div class="card h-100 d-flex flex-column d-none">
+                    <img src="" class="card-img-top img-fluid" alt="Image">
+                    <div class="card-body flex-grow-1 d-flex flex-column">
+                        <h5 class="card-title text-center">Title</h5> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        hero();
+        localStorage.setItem("Pag",5);
+        document.getElementById('cartLink').classList.add('d-none');   
+        loadLang();
+        async function hero(){ //visualizza a schermo le info dell'eroe
+            id =  new URLSearchParams(window.location.search).get('id');
+            console.log(id);
+            result = await getFromMarvel("public/characters/"+id,"",false);
+            heroData = result.data.results[0];
+            console.log(result.data.results[0]);
+            card = document.getElementById('cardCopy');
+            card.getElementsByClassName('img-fluid')[0].src = heroData.thumbnail.path + "." + heroData.thumbnail.extension;
+            card.getElementsByClassName('card-title')[0].textContent = heroData.name;
+            card.getElementsByClassName('overwiew')[0].textContent = heroData.description;
+            generateComics(heroData.comics.items);
+            generateSeries(heroData.series.items);
+        }
+
+        async function generateComics(items){//visualizza a schermo le info relative ai comics
+            // console.log(items);
+            let numberOfComics;
+            if(items.length < 7)
+                numberOfComics = items.length;
+            else
+                numberOfComics = 6;
+                comic = document.getElementById('comicsCopy');
+            for(let i = 0; i < numberOfComics; i++){
+                comicsData = await getFromMarvel(items[i].resourceURI,"",true);
+                singleComic = comicsData.data.results[0];
+                // console.log(singleComic);    
+                temp = comic.cloneNode(true);
+                temp.getElementsByClassName('card')[0].classList.remove('d-none');
+                temp.getElementsByClassName('card-img-top')[0].src = singleComic.images[0].path + "." + singleComic.images[0].extension;
+                temp.getElementsByClassName('card-title')[0].textContent = singleComic.title;
+                comic.before(temp);
+            }
+        }
+
+        async function generateSeries(items){//visualizza a schermo le info relative alle serie
+            // console.log(items);
+            let numberOfSeries;
+            if(items.length < 7)
+                numberOfSeries = items.length;
+            else
+                numberOfSeries = 6;
+                series = document.getElementById('seriesCopy');
+            for(let i = 0; i < numberOfSeries; i++){
+                seriesData = await getFromMarvel(items[i].resourceURI,"",true);
+                singleSeries = seriesData.data.results[0];
+                console.log(singleSeries);    
+                temp = series.cloneNode(true);
+                temp.getElementsByClassName('card')[0].classList.remove('d-none');
+                temp.getElementsByClassName('card-img-top')[0].src = singleSeries.thumbnail.path + "." + singleSeries.thumbnail.extension;
+                temp.getElementsByClassName('card-title')[0].textContent = singleSeries.title;
+                series.before(temp);
+            }
+        }
+    </script>
+</body>
+</html>

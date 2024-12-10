@@ -1,0 +1,107 @@
+.custom-center {
+    text-align: center!important;
+}
+
+.form-select{
+    width: inherit!important;
+}
+
+.bg-primary{
+    background-color: #1a1a1a !important;
+}
+/*Aggiunge una transizione per un effetto più fluido*/
+.nav-link img{ 
+    opacity: 0.5 !important; 
+    transition: opacity 0.3s !important;                        
+}
+
+.nav-link img:hover{
+    opacity: 0.75 !important;
+}
+
+@media (min-width: 992px){
+    .form-select{
+        margin-inline: 2% !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .form-select{
+        margin-inline: 0 !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-right-md {
+        position: fixed;
+        right: 0vw; 
+        margin: 0 0 0vw 50vw;
+    }
+    .modal-sm {
+        --bs-modal-width: initial; 
+    }
+}
+
+@media (max-width: 576px) {
+
+    .nav-item{
+        text-align: center;
+    }
+
+    .nav-link{
+        text-align: center;
+    }
+
+    #logo{
+        width: 25vw;
+    }
+
+    .modal-dialog-scrollable .modal-content {
+        max-height: calc(100vh - 0rem);
+    }
+    .modal-right-sm {
+        top: 0vh;
+        margin: 0 0 0vw 0vw
+    }
+
+    .modal body .row{
+        justify-content: unset;
+    }
+}
+
+@media (min-width: 1025px) {
+    .modal-right-lg{
+        margin: 0 0 0vw 70vw
+    }
+} 
+
+/* Per WebKit (Chrome, Safari, Opera) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Per Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+#cart{
+    top: 0vh;
+    --bs-modal-margin: 0rem;
+}
+
+#cart .modal-dialog{
+    max-width: none;
+    margin:0;
+}
+
+.card-footer{
+    background-color: transparent !important;
+    border-top: none !important;
+}
+
+.card-body{
+    padding-bottom: 0;
+}

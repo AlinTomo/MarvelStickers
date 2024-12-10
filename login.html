@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/login.css">
+    <title>Login</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+    
+    <div class="container-fluid bg-image">
+        <div class="position-absolute end-0">
+            <select id="language" class="form-select mx-auto text-center" onchange="setLang(this.value)" aria-label="Default select example">
+                <option selected disabled hidden value="def">language</option>  
+            </select>
+        </div>
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-4">
+                    <div class="text-center mb-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg" alt="Marvel Logo" class="img-fluid" width="200">
+                    </div>
+                    <form id="form" onsubmit="event.preventDefault(); login()">
+                        <div class="form-group mb-3">
+                            <input id="email" type="email" class="form-control mb-3" id="email" placeholder="Email" value="mark.otto@gmail.com">
+                            <input id="password" type="password" class="form-control" id="password" placeholder="password" value="Tomoiaga1@">
+                            <div id="feedback" class="invalid-feedback">name or username are wrong</div>
+                        </div>
+                        <button id="log" type="submit" class="btn btn-danger btn-block w-100">Continue</button>
+                    </form>
+                    <a id="register"  class="btn btn-danger btn-block w-100 mt-3 text-center" href="register.html">Sign in</a>                    
+                    <a id="forgot" class="text-center mt-3" href="changePassword.html">forgot your password?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        genLanguage();
+        localStorage.setItem('Pag',8);
+        loadLang();
+        localStorage.removeItem('arrayId');
+        localStorage.removeItem('idUser');
+        function login(){
+            form = document.getElementById('form');
+            email = document.getElementById('email');
+            feedback = document.getElementById('feedback');
+            password = document.getElementById('password');
+            console.log(email.value);   
+            if(email.value == "" || password.value == ""){
+                console.log('empty');
+                feedback.classList.remove('d-none');
+                email.classList.add('is-invalid');
+                password.classList.add('is-invalid');
+                return;
+            }
+
+            if(!emailRegex.test(email.value)){
+                feedback.classList.remove('d-none');
+                email.classList.add('is-invalid');
+                return;
+            }
+            else{
+                feedback.classList.add('d-none');
+                var flag = false;
+                obj = {
+                    email : email.value,
+                    password : password.value
+                }
+                fetch("http://localhost:3000/login?api_key="+api_key,setPostOption(obj))
+                    .then(response =>{
+                        console.log(response);
+                        if(response.status == 200){
+                            window.location.href = "index.html";
+                            flag = true;
+                        }
+                        else{
+                            feedback.classList.remove('d-none');
+                            email.classList.add('is-invalid');
+                            password.classList.add('is-invalid');
+                        }
+                        return response.json();
+                    })
+                    .then(response =>{
+                        if(flag){
+                            console.log(response);
+                            localStorage.setItem("idUser",response.id);
+                        }
+                    })
+            }
+        }
+    </script>
+</body>
+</html>

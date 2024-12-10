@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/register.css">
+    <title>Register</title>
+    
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+    <div class="card border border-0 container-fluid g-0">
+        <div class="row g-0 vh-100">
+            <div class="col-xl-4 col-lg-6 col-md-6 h-100 hide-on-sm">
+                <img src="images/logo.jpg" class="img-fluid" alt="" style="width: 100%;">
+            </div>
+            <div class="col-xl-8 col-md-6 flex-column justify-content-center gx-4">
+                <div class="container">
+                    <div class="margin-left">
+                        <select id="language" class="form-select mx-auto text-center" onchange="setLang(this.value);" aria-label="Default select example">
+                            <option selected disabled hidden value="def">language</option>  
+                        </select>  
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 id="title" class="text-center mb-3">Registrati</h2>
+                    <form class="row g-3" onsubmit="event.preventDefault(); check(true);" oninput="check(false)">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="name" placeholder="name" value="">
+                            <div id="nameFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="surname" placeholder="surname" value="">
+                            <div id="surnameFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" class="form-control" id="age" placeholder="age" min="0" max="99" value="">
+                            <div id="ageFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-select" id="superhero">
+                                <option selected disabled hidden value="">Choose your superhero</option>
+                            </select>
+                            <div id="superheroFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" id="email" placeholder="email" value="">
+                            <div id="emailFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="password" class="form-control" id="password" placeholder="password" value="">
+                            <div id="passwordFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="confirm password" value="">
+                            <div id="confirmPasswordFeedback" class="valid-feedback d-none">Looks good!</div>
+                        </div>
+                        <button id="register" class="btn btn-primary" type="submit">Sign up</button>
+                    </form>                        
+                    <div class="col-12 d-flex justify-content-center mt-4">
+                        <a id="log" href="login.html">log in</a>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        getAllHeroes();
+        genLanguage();
+        localStorage.setItem('Pag',9);
+        loadLang();
+        
+        function showInvalid(message, element, feedback) {
+            element.classList.add("is-invalid");
+            element.classList.remove("is-valid");
+            feedback.textContent = message;
+            feedback.classList.remove("d-none");
+            feedback.classList.remove("valid-feedback");
+            feedback.classList.add("invalid-feedback");
+        }
+
+        function showValid(message,element, feedback) {
+            element.classList.add("is-valid");
+            element.classList.remove("is-invalid");
+            feedback.textContent = message;
+            feedback.classList.add("valid-feedback");
+            feedback.classList.remove("invalid-feedback");
+        }
+
+        function check(submit){
+            var form = 0;
+            nome = document.getElementById("name");
+            nomeFeedback = document.getElementById("nameFeedback");
+            surname = document.getElementById("surname");
+            surnameFeedback = document.getElementById("surnameFeedback");
+            age = document.getElementById("age");
+            ageFeedback = document.getElementById("ageFeedback");
+            superhero = document.getElementById("superhero");
+            superheroFeedback = document.getElementById("superheroFeedback");
+            password = document.getElementById("password");
+            passwordFeedback = document.getElementById("passwordFeedback");
+            confirmPassword = document.getElementById("confirmPassword");
+            confirmPasswordFeedback = document.getElementById("confirmPasswordFeedback");
+            let words = JSON.parse(localStorage.getItem('words'));
+            if(nome.value == ""){
+                showInvalid(words[6].text, nome, nomeFeedback);
+                // console.log("name missing")
+            }
+            else{
+                showValid(words[5].text, nome, nomeFeedback);
+                form++;
+                
+            }
+
+            if(surname.value == ""){
+                showInvalid(words[7].text, surname, surnameFeedback);
+                // console.log("surname missing")
+            }
+            else{
+                showValid(words[5].text, surname, surnameFeedback);
+                form++;
+            }
+
+            if(age.value == ""){
+                showInvalid(words[8].text, age, ageFeedback);
+                // console.log("age missing")
+            }
+            else{
+                if(age.value < 0 || age.value > 99){
+                    showInvalid(words[17].text, age, ageFeedback);
+                    // console.log("Age must be between 0 and 99")
+                }
+                else{
+                    showValid(words[5].text, age, ageFeedback);
+                    form++;
+                }
+            }
+        
+            if(superhero.value == ""){
+                showInvalid(words[11].text, superhero, superheroFeedback);
+                // console.log("superhero missing")
+            }
+            else{
+                showValid(words[5].text,superhero, superheroFeedback);
+                form++;
+            }
+            if(email.value == ""){
+                showInvalid(words[9].text, email, emailFeedback);
+                // console.log("email missing")
+            } else if (!emailRegex.test(email.value)) {
+                showInvalid(words[10].text, email, emailFeedback);
+                // console.log("email not valid")
+            } else {
+                showValid(words[5].text,email, emailFeedback);
+                form++;
+            }
+
+            if(password.value == ""){
+                showInvalid(words[20].text, password, passwordFeedback);
+                // console.log("password missing")
+            }
+            else{
+                // console.log(submit);
+                if(submit == false){
+                    return;
+                }
+                if(password.value.length > 8 && passwordRegex.test(password.value)){
+                    showValid(words[5].text, password, passwordFeedback);
+                }
+                else{
+                    showInvalid(words[18].text, password, passwordFeedback);
+                    // console.log("Password must be at least 8 characters long and contain at least one number and one uppercase letter")
+                }
+            }
+
+            if(confirmPassword.value == ""){
+                showInvalid(words[16].text, confirmPassword, confirmPasswordFeedback);
+                // console.log("confirm password missing")
+            }
+            else{
+                showValid(words[5].text, confirmPassword, confirmPasswordFeedback);
+            }
+            if(password.value == "" || confirmPassword.value == ""){
+                console.log(form);
+                return;
+            }
+            if(password.value != confirmPassword.value){
+                showInvalid(words[19].text, password, passwordFeedback);
+                showInvalid(words[19].text, confirmPassword, confirmPasswordFeedback);
+                // console.log("passwords don't match")
+            }else{
+                showValid(words[5].text, password, passwordFeedback);
+                showValid(words[5].text, confirmPassword, confirmPasswordFeedback);
+                form++;
+            }
+            flag = false;
+            // console.log(form);
+            if(form == 6 && submit == true){
+                console.log(form);
+                var obj = {
+                    name: nome.value,
+                    surname: surname.value,
+                    age: age.value,
+                    superhero: superhero.value,
+                    email: email.value,
+                    password: password.value,
+                    cards: [] 
+                }
+                fetch("http://localhost:3000/users?api_key="+api_key,setPostOption(obj))
+                    .then(response => {
+                        if(response.status == 200){
+                            console.log("User created");
+                            window.location.href = "login.html";
+                            flag = true;
+                        }
+                        return response.json();
+                    })
+                    .then(response => {
+                        if(!flag){
+                            console.log(response.response);
+                            switch(response.response){
+                                case "name not found":
+                                    showInvalid(words[6].text, nome, nomeFeedback);
+                                    break;
+                                case "surname not found":
+                                    showInvalid(words[7].text, surname, surnameFeedback);
+                                    break;
+                                case "superhero not found":
+                                    showInvalid(words[11].text, superhero, superheroFeedback);
+                                    break;
+                                case "email not found":
+                                    showInvalid(words[9].text, email, emailFeedback);
+                                    break;
+                                
+                                case "email not valid":
+                                    showInvalid(words[10].text, email, emailFeedback);
+                                    break;
+                                
+                                case "password not found":
+                                    showInvalid(words[20].text, password, passwordFeedback);
+                                    break;
+                                
+                                case "password not valid":
+                                    showInvalid(words[18].text, password, passwordFeedback);
+                                    break;
+                                
+                                case "age not found":
+                                    showInvalid(words[8].text, age, ageFeedback);
+                                    break;
+
+                                case "age not valid":
+                                    showInvalid(words[17].text, age, ageFeedback);
+                                    break;
+                                
+                                case "email already used":
+                                    showInvalid(words[12].text, email, emailFeedback);
+                                    break;
+                            }
+                        }
+                    });       
+            }
+        }
+    </script>
+</body>
+</html> 

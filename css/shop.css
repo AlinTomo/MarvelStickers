@@ -1,0 +1,96 @@
+.btn-outline-secondary { --bs-btn-color: #000000;
+    --bs-btn-border-color: #000000;
+    --bs-btn-hover-bg: #000000;
+    --bs-btn-hover-border-color: #000000;
+    --bs-btn-active-bg: #000000;
+    --bs-btn-active-border-color: #000000;
+    --bs-btn-disabled-color: #000000;
+    --bs-btn-disabled-border-color: #000000;
+}
+@media (max-width: 576px) {
+
+    #carousel1 .carousel-item,
+    #carousel2 .carousel-item,
+    #carousel3 .carousel-item {
+        height: 40vh; /* Set a fixed height for small screens */
+    }
+    h4{
+        font-size: 1.1rem;
+        margin-top: 0.5rem!important; 
+    }
+
+    #shopContainer .card-img-top {
+        height: 23vh; 
+    }
+
+    .row>* {
+        padding-right: calc(var(--bs-gutter-x)* .3);
+        padding-left: calc(var(--bs-gutter-x)* .3);   
+    }
+
+    .sm-6{
+        width: 60%;
+    }
+
+    .sm-4{
+        width: 40%;
+    }
+    
+    .col-sm-4 {
+        flex: 0 0 auto;
+        width: 33%; /* Show two cards per row on small screens */
+    }
+    #shopContainer .card-title {
+        font-size: 1rem; 
+        text-align: center;
+    }
+
+    .carousel-item .btn.btn-danger {
+        font-size: 0.75rem; 
+    }
+}
+
+@media (max-width: 376px) {
+    #shopContainer .card-title {
+        font-size: 0.85rem; 
+    }
+
+    .carousel-item .btn.btn.btn-danger {
+        font-size: 0.7rem; 
+    }
+
+    .sm-6{
+        width: 55%;
+    }
+
+    .sm-4{
+        width: 45%;
+    }
+}
+
+@media (max-width: 321px) {
+    .card-footer{
+        padding: 0.5rem;
+    }
+
+    .row>* {
+        padding-right: calc(var(--bs-gutter-x)* .2);
+        padding-left: calc(var(--bs-gutter-x)* .2);
+    }
+
+    .card-title {
+        font-size: 0.8rem; 
+    }
+    .carousel-item .btn.btn-danger {
+        font-size: 0.6rem; 
+    }
+
+    .sm-6{
+        width: 50%;
+    }
+
+    .sm-4{
+        width: 50%;
+    }
+    
+}

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/index.css">
+    <title>index</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+    <script src="nav.js"></script>
+    <div class="container">
+        <h1 id="title" class="text-center mt-4">
+            Welcome to the Marvel Stickers Store
+        </h1>
+        <h4 id="credits" class="mt-4 ">credits:</h4>
+        <h4 id="packets">Packs to open:</h4>
+        <div id="packetsRow" class="row">
+            <div id="copy" class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2">
+                <div class="card d-none">
+                    <img class="card-img-top" src="">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"></h5>
+                    </div>
+                    <div class="card-footer d-flex justify-content-center">
+                        <button class="btn btn-danger" type="button" onclick="openPack(this.closest('.card'))">open</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="albumContainer" class="container">
+        <h4 class="" id="yourCards">your cards</h4>
+        <ul id="pagination" class="pagination">
+            <li class="page-item no" onclick="prevPage(this)">
+                <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li id="a1" class="page-item active" onclick="showPage(this)"><a  class="page-link" >1</a></li>
+            <li id="a2" class="page-item" onclick="showPage(this)"><a  class="page-link">2</a></li>
+            <li id="a3" class="page-item" onclick="showPage(this)"><a  class="page-link">3</a></li>
+            <li class="page-item no" onclick="nextPage(this.closest('.active'))">
+                <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+        <div id="suggestTrade" class="card scrollable">
+            <p id="noCards" class="text-center d-none">no cards</p>
+            <div id="cardsRow" class="row">
+                <div id="cardCopy" class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2">
+                    <div class="card h-100 d-flex flex-column d-none gy-0">
+                        <img src="" class="card-img-top img-fluid" alt="Image">
+                        <div class="card-body flex-grow-1 d-flex flex-column">
+                            <h5 class="card-title text-center">Title</h5> 
+                        </div>
+                        <div class="card-footer mt-auto text-center">
+                            <a class="btn btn-danger details" href="hero.html">details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+    <script>
+        localStorage.removeItem('words');
+        validateLog();
+        localStorage.setItem('Pag',2);//specifica la pagina della navigazioen in cui siamo
+        document.getElementById('cartLink').classList.add('d-none');
+        
+        document.getElementsByClassName('nav-link')[0].classList.add('active');
+        updateUserStatus();
+        loadLang();
+
+
+        function updateUserStatus(){ //aggiorna i crediti e i pacchetti dell'utente
+            let flag = false;
+            id = localStorage.getItem('idUser');
+            fetch("http://localhost:3000/users/"+id+"?api_key="+api_key,get)
+                .then(response =>{
+                    if(response.status == 200)
+                        flag = true;
+                    return response.json();
+                })
+                .then(response =>{
+                    if(flag){
+                        showPage(document.getElementById("a1"));
+                        localStorage.setItem('page',1); //salvo il valore della pagina dell'album
+                        localStorage.setItem('packets',JSON.stringify(response.packets));
+                        localStorage.setItem('credits',JSON.stringify(response.credits));//mi serve nel caso in cui devo fare fetch per aggiornare il numero di pacchetti ma non devo aggiornare i crediti perchè nella stessa fetch aggionro sia i crediti che il numero di pacchetti
+                        // console.log(response);
+                        changeTitle(response.credits,response.packets.length);
+                        generatePack(response.packets); 
+                    }
+                });
+        }
+
+        function changeTitle(credits,packets){ //modifica dei titoli della pagina
+            actualCredits = document.getElementById('credits');
+            actulaPackets = document.getElementById('packets');  
+            actualCredits.textContent += " "+credits;
+            actulaPackets.textContent += " "+packets;
+        }
+
+        function generatePack(packets){ //genera i pacchetti di figurine ancora da aprire
+            copy = document.getElementById('copy');
+            for (let i = packets.length-1; i >= 0; i--) {
+                temp = copy.cloneNode(true);
+                temp.getElementsByClassName('card-img-top')[0].src = "images/album.jpg";
+                temp.getElementsByClassName('card-title')[0].textContent = packets[i]+" cards";
+                temp.getElementsByClassName('card')[0].classList.remove('d-none');
+                temp.id = i;
+                copy.before(temp); 
+            }
+        }
+
+        async function openPack(card){ //funzione che permette di aprire i pacchetti di figurine
+            var number = card.getElementsByClassName('card-title')[0].textContent.split(" ")[0];  
+            number = parseInt(number);
+            document.getElementById('packetsRow').removeChild(card.parentNode);
+            let array = getCardsNumber(number);//posizioni casuali da cui fare le fetch per prendere delle carte casuali 
+            let cardsId = [];
+            for (let i = 0; i < array.length; i++) {
+                console.log("ciclo: ",i);
+                do{
+                    result = await getFromMarvel('public/characters',"limit=1&offset=" + array[i],false); 
+                    console.log(result);
+                    array[i]-=100; //valore arbitrario per trovare un supereroe visto che gli offset sono tutti sballati
+                    console.log("lunghezza dati",result.data.results.length);
+                }while(result.data.results.length == 0);
+                if(result.data.results[0].id){
+                    cardsId.push(result.data.results[0].id);
+                }
+                else{
+                    console.log(result.id);
+                    cardsId.push(result.id);
+                }
+            }
+            console.log(cardsId);
+            let obj = {
+                cards: cardsId
+            }
+            let flag = false;
+            fetch("http://localhost:3000/users/"+id+"/heroes?api_key="+api_key,setPostOption(obj))
+                .then(response =>{
+                    if(response.status == 200)
+                        flag = true;
+                    return response.json();
+                })
+                .then(response => {
+                    if(flag){
+                        // console.log(localStorage.getItem('packets'));
+                        let packets = JSON.parse(localStorage.getItem('packets'));
+                        let index = packets.findIndex(item => item === number);
+                        if (index !== -1) {
+                            packets.splice(index, 1);
+                        }
+                        // console.log("dopo",packets)
+                        localStorage.setItem('packets',JSON.stringify(packets));
+                        let packetsAndCredits = {
+                            credits: JSON.parse(localStorage.getItem('credits')),
+                            packets: packets
+                        }
+                        updatePacketsAndCredits(packetsAndCredits,false);
+                        currentPage = localStorage.getItem('page');
+                        offset = (currentPage*20)-20;
+                        fetch("http://localhost:3000/users/"+id+"?api_key="+api_key,get)
+                            .then(response => {
+                                if(response.status == 200)
+                                    flag = true;
+                                return response.json();
+                            })
+                            .then(response => {
+                                if(flag){
+                                    genUserCards(response.cards,offset);
+                                }
+                                else{
+                                    console.log("l'utente non ha carte");
+                                }
+                            });
+                                }
+                                else
+                                    console.log(response);
+                            })
+        }
+
+        async function genUserCards(cards,offset){ //fa vedere a schermo le carte dell'utente dopo aver aperto il pacchetto
+            let heroes = [];
+            finalOffset = offset + 21;
+            // console.log("eroi totali",cards.length);
+            // console.log("offset di partenza",offset);
+            if(finalOffset > cards.length)
+                finalOffset = offset + (cards.length - offset);
+            // console.log("offset finale",finalOffset);
+            for (let i = offset; i < finalOffset; i++) {  
+                response = await getFromMarvel("public/characters/" + cards[i], "",false);
+                heroes.push(response.data.results[0]);       
+            }
+            copy = document.getElementById('cardCopy');
+            while(copy.previousElementSibling != null){
+                copy.previousElementSibling.remove();
+            }
+            for (let i = 0; i < heroes.length; i++) { 
+                temp = copy.cloneNode(true);
+                temp.getElementsByClassName('card-img-top')[0].src = heroes[i].thumbnail.path+"."+heroes[i].thumbnail.extension;
+                temp.getElementsByClassName('card-title')[0].textContent = heroes[i].name;
+                temp.getElementsByClassName('card')[0].classList.remove('d-none');
+                temp.getElementsByClassName('details')[0].href = "hero.html?id="+heroes[i].id;
+                temp.id = i;
+                copy.before(temp);
+            }    
+        }
+        
+        function showPage(page){ //page è un array di elementi di pagination che rappresentano la stessa pagina una in basso un in alto
+            // console.log(page);
+            pageNumber = parseInt(page.textContent);
+            page.classList.add('active');
+            let temp = page.previousElementSibling;
+            while(temp != null){
+                temp.classList.remove('active');
+                temp = temp.previousElementSibling;
+            }
+            temp = page.nextElementSibling;
+            while(temp != null){
+                temp.classList.remove('active');
+                temp = temp.nextElementSibling;
+            }   
+            
+            let offset = (pageNumber*20)-20
+
+            fetch("http://localhost:3000/users/"+id+"?api_key="+api_key,get)
+                .then(response => {
+                    if(response.status == 200)
+                        flag = true;
+                    return response.json();
+                })
+                .then(response => {
+                    if(flag){
+                        // console.log("offset",offset);
+                        // console.log("cards",response.cards);
+                        localStorage.setItem("cards",JSON.stringify(response.cards));
+                        if(response.cards.length > 0 && response.cards.length > offset){
+                            yesCards();
+                            genUserCards(response.cards,offset);
+                        }
+                        else{
+                            noCards();
+                        }
+                    }
+                    else{
+                        noCards();
+                        console.log("l'utente non ha carte");
+                    }
+                });
+        }
+
+        function prevPage(page){//utilizzo della freccia per andare indietro nella paginazione
+            var page = document.querySelector('.page-item.active');
+            // console.log(page);
+            number = page.getElementsByClassName('page-link')[0].textContent;
+            number = parseInt(number);
+            if(page.id != "a1" && number > 1){ //se non sono alla prima pagina imposto a active la pagina precedente
+                console.log(page)
+                page.classList.remove('active');
+                page.previousElementSibling.classList.add('active');
+                page.previousElementSibling.getElementsByClassName('page-link')[0].click();
+            }
+            else if(number != 1){//se sono alla prima pagina e il numero della pagina è diverso da 1 posso andare indietro decrementando il numero della pagina
+                // console.log(page);
+                page.getElementsByClassName('page-link')[0].textContent = number-1;
+                let temp = page.nextElementSibling;
+                if(temp){
+                    temp.classList.add("active");
+                    page.classList.remove("active");
+                }
+                while(!temp.classList.contains('no')){
+                    temp.getElementsByClassName('page-link')[0].textContent = parseInt(temp.getElementsByClassName('page-link')[0].textContent)-1;
+                    temp = temp.nextElementSibling;
+                }
+            }
+        }
+
+        async function nextPage(page,position){//utilizzo la freccia per andare in avanti nella paginazione
+            var page = document.querySelector('.page-item.active');
+            // console.log("prevActive page",page);
+            number = page.getElementsByClassName('page-link')[0].textContent;
+            number = parseInt(number);
+            cardsLength = JSON.parse(localStorage.getItem('cards')).length;
+            // console.log("cardsLength",cardsLength,"number",number*20);
+            if(page.id !="a3"){ //se non sono alla terza opzione pagina imposto a active la pagina successiva 
+                page.classList.remove('active');
+                page.nextElementSibling.classList.add('active');
+                page.nextElementSibling.getElementsByClassName('page-link')[0].click();
+            }
+            else{
+                if(number * 20 <= cardsLength){//una prossima pagina verra mostrata dal pagination solo se ci sono se ce almeno una carta nella prossima pagina
+                    page.getElementsByClassName('page-link')[0].textContent = number + 1;
+                    let temp = page.previousElementSibling;
+                    if(temp){
+                        temp.classList.add("active");
+                        page.classList.remove("active");
+                    }
+                    while(!temp.classList.contains('no')){
+                        temp.getElementsByClassName('page-link')[0].textContent = parseInt(temp.getElementsByClassName('page-link')[0].textContent)+1;
+                        temp = temp.previousElementSibling;
+                    }       
+                }
+            }  
+        }
+        
+        function yesCards(){ //se l'utente ha carte da mostrare le mostra
+            document.getElementById('noCards').classList.add('d-none');
+            document.getElementById('cardsRow').classList.remove('d-none');
+        }
+
+        function noCards(){ //se l'utente non ha carte da mostrare mostra il messaggio no cards
+            document.getElementById('noCards').classList.remove('d-none');
+            document.getElementById('cardsRow').classList.add('d-none');
+        }
+    </script>
+</html>

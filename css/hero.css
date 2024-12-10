@@ -1,0 +1,88 @@
+.card-img-top {
+    /* height: 30vh; */
+    height: 60%;
+}
+
+@media (max-width: 768px) {
+
+    #title, #overwiew {
+        text-align: center;
+    }
+
+    h5{
+        font-size: 0.9rem;
+    }
+    
+}
+
+@media (max-width: 576px) {
+    #cardCopy {
+        max-width: 100%;
+    }
+    .col-sm-6 {
+        flex: 0 0 auto; 
+        width: 50%; /* Show two cards per row on small screens */
+    }
+
+    .card-img-top {
+        height: 20vh; /* Adjust this value as needed */
+    }
+
+    h5{
+        font-size: 0.8em;
+    }
+
+    h1{
+        font-size: 1.3rem;
+    }
+
+    p{
+        font-size: 0.8rem;
+    }
+
+    .col-sm-4 {
+        flex: 0 0 auto;
+        width: 33%; /* Show two cards per row on small screens */
+    }
+
+    .row>* {
+        padding-right: calc(var(--bs-gutter-x)* .3);
+        padding-left: calc(var(--bs-gutter-x)* .3);   
+    }
+
+}
+
+@media (max-width: 376px) {
+    .row>* {
+        padding-right: calc(var(--bs-gutter-x)* .25);
+        padding-left: calc(var(--bs-gutter-x)* .25);
+    }
+
+    #cardCopy .card-body {
+        padding-top: 1vh;
+    }
+
+    p{
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 321px) {
+    h5{
+        font-size: 0.7em;
+    }
+
+    .row>* {
+        padding-right: calc(var(--bs-gutter-x)* .2);
+        padding-left: calc(var(--bs-gutter-x)* .2);
+    }
+
+    .card-body{
+        padding-inline: inherit;   
+    }
+
+    p{
+        font-size: 0.65rem;
+    }
+    
+}
