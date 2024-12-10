@@ -1,1 +1,1 @@
-la documentazione del progetto si trova nella cartella documents
+é un progetto sviluppato per un corso universitario la documentazione del progetto si trova nella cartella documents
